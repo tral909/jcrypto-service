@@ -1,4 +1,4 @@
-package io.github.tral909.jcrypto_service;
+package io.github.tral909.jcrypto_service.backend.logic;
 
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
