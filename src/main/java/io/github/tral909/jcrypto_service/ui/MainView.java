@@ -1,51 +1,36 @@
 package io.github.tral909.jcrypto_service.ui;
 
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.router.Route;
-import io.github.tral909.jcrypto_service.backend.model.DigestAlgorithm;
-import io.github.tral909.jcrypto_service.backend.logic.DigestService;
-import org.apache.commons.lang3.StringUtils;
+import com.vaadin.flow.router.HighlightConditions;
+import com.vaadin.flow.router.RouterLink;
 
-@Route
 @CssImport("./styles/styles.css")
-public class MainView extends VerticalLayout {
+public class MainView extends AppLayout {
 
-    public MainView(DigestService digestService) {
-        ComboBox<DigestAlgorithm> algorithms = new ComboBox<>("Algorithm");
-        algorithms.setItems(DigestAlgorithm.values());
-        algorithms.setItemLabelGenerator(DigestAlgorithm::getName);
-        algorithms.setValue(DigestAlgorithm.SHA_256);
+    public MainView() {
+        H1 logo = new H1("JCrypto Service");
+        logo.addClassName("logo");
+        Anchor logout = new Anchor("logout", "Log out");
 
-        TextArea origTxt = new TextArea("Original input");
-        origTxt.setPlaceholder("Text to digest ...");
-        origTxt.setWidth("50%");
-        origTxt.setRequired(true);
+        HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), logo, logout);
+        header.addClassName("header");
+        header.expand(logo);
+        header.setDefaultVerticalComponentAlignment(
+                FlexComponent.Alignment.CENTER);
+        header.setWidth("100%");
+        addToNavbar(header);
 
-        TextArea digestText = new TextArea("Digested output");
-        digestText.setWidth("50%");
-
-        Button digestBtn = new Button("digest", e -> {
-            if (StringUtils.isNoneBlank(origTxt.getValue())) {
-                digestText.setValue(digestService.digest(origTxt.getValue(), algorithms.getValue().getName()));
-            } else {
-                digestText.clear();
-            }
-        });
-        //digestBtn.setEnabled(false);
-        digestBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        //криво работает(только по blur с textarea) сделаем валидацию потом
-//        origTxt.addValueChangeListener(e ->
-//            digestBtn.setEnabled(StringUtils.isNotBlank(origTxt.getValue()))
-//        );
-
-        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-        add(algorithms, origTxt, digestText, digestBtn);
+        RouterLink digestPage = new RouterLink("Digest", DigestView.class);
+        digestPage.setHighlightCondition(HighlightConditions.sameLocation());
+        addToDrawer(new VerticalLayout(digestPage,
+                new RouterLink("Keys", KeysView.class),
+                new RouterLink("Signature", CryptoSignatureView.class)));
     }
-
 }
