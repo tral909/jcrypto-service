@@ -110,8 +110,14 @@ public class CryptoSignatureView extends VerticalLayout {
         });
 
 
-        VerticalLayout signLayout = new VerticalLayout(uploadSign, outputSign);
-        VerticalLayout verifySignLayout = new VerticalLayout(uploadVerifySign, outputVerifySign);
+        Div signTitle = new Div();
+        signTitle.add("Sign file");
+        VerticalLayout signLayout = new VerticalLayout(signTitle, uploadSign, outputSign);
+
+        Div verifyTitle = new Div();
+        verifyTitle.add("Verify signature");
+        VerticalLayout verifySignLayout = new VerticalLayout(verifyTitle, uploadVerifySign, outputVerifySign);
+
         HorizontalLayout mainLayout = new HorizontalLayout(signLayout, verifySignLayout);
         add(mainLayout);
     }
