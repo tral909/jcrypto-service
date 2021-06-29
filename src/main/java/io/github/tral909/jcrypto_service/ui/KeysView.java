@@ -6,7 +6,7 @@ import com.vaadin.flow.router.Route;
 
 @Route(value = "keys", layout = MainView.class)
 public class KeysView extends VerticalLayout {
-    public KeysView() {
-        add(new H1("Keys page will be soon!"));
-    }
+	public KeysView() {
+		add(new H1("Keys page will be soon!"));
+	}
 }

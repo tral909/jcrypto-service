@@ -10,13 +10,13 @@ import java.security.MessageDigest;
 @Service
 public class DigestService {
 
-    @SneakyThrows
-    public String digest(String payload, String algorithm) {
-        Assert.notNull(payload, "payload is null");
-        Assert.notNull(algorithm, "algorithm is null");
+	@SneakyThrows
+	public String digest(String payload, String algorithm) {
+		Assert.notNull(payload, "payload is null");
+		Assert.notNull(algorithm, "algorithm is null");
 
-        MessageDigest md = MessageDigest.getInstance(algorithm);
-        md.update(payload.getBytes());
-        return Hex.encodeHexString(md.digest()).toUpperCase();
-    }
+		MessageDigest md = MessageDigest.getInstance(algorithm);
+		md.update(payload.getBytes());
+		return Hex.encodeHexString(md.digest()).toUpperCase();
+	}
 }

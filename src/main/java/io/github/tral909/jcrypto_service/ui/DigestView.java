@@ -14,36 +14,36 @@ import org.apache.commons.lang3.StringUtils;
 @Route(value = "", layout = MainView.class)
 public class DigestView extends VerticalLayout {
 
-    public DigestView(DigestService digestService) {
-        ComboBox<DigestAlgorithm> algorithms = new ComboBox<>("Algorithm");
-        algorithms.setItems(DigestAlgorithm.values());
-        algorithms.setItemLabelGenerator(DigestAlgorithm::getName);
-        algorithms.setValue(DigestAlgorithm.SHA_256);
+	public DigestView(DigestService digestService) {
+		ComboBox<DigestAlgorithm> algorithms = new ComboBox<>("Algorithm");
+		algorithms.setItems(DigestAlgorithm.values());
+		algorithms.setItemLabelGenerator(DigestAlgorithm::getName);
+		algorithms.setValue(DigestAlgorithm.SHA_256);
 
-        TextArea origTxt = new TextArea("Original input");
-        origTxt.setPlaceholder("Text to digest ...");
-        origTxt.setWidth("90%");
-        origTxt.setRequired(true);
+		TextArea origTxt = new TextArea("Original input");
+		origTxt.setPlaceholder("Text to digest ...");
+		origTxt.setWidth("90%");
+		origTxt.setRequired(true);
 
-        TextArea digestText = new TextArea("Digested output");
-        digestText.setWidth("90%");
+		TextArea digestText = new TextArea("Digested output");
+		digestText.setWidth("90%");
 
-        Button digestBtn = new Button("digest", e -> {
-            if (StringUtils.isNoneBlank(origTxt.getValue())) {
-                digestText.setValue(digestService.digest(origTxt.getValue(), algorithms.getValue().getName()));
-            } else {
-                digestText.clear();
-            }
-        });
-        //digestBtn.setEnabled(false);
-        digestBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button digestBtn = new Button("digest", e -> {
+			if (StringUtils.isNoneBlank(origTxt.getValue())) {
+				digestText.setValue(digestService.digest(origTxt.getValue(), algorithms.getValue().getName()));
+			} else {
+				digestText.clear();
+			}
+		});
+		//digestBtn.setEnabled(false);
+		digestBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        //криво работает(только по blur с textarea) сделаем валидацию потом
+		//криво работает(только по blur с textarea) сделаем валидацию потом
 //        origTxt.addValueChangeListener(e ->
 //            digestBtn.setEnabled(StringUtils.isNotBlank(origTxt.getValue()))
 //        );
 
-        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-        add(algorithms, origTxt, digestText, digestBtn);
-    }
+		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+		add(algorithms, origTxt, digestText, digestBtn);
+	}
 }
