@@ -15,7 +15,7 @@ import com.vaadin.flow.router.RouterLink;
 public class MainView extends AppLayout {
 
 	public MainView() {
-		H1 logo = new H1("JCrypto Service");
+		H1 logo = new H1("JCRYPTO SERVICE");
 		logo.addClassName("logo");
 		Anchor logout = new Anchor("logout", "Log out");
 
@@ -29,8 +29,10 @@ public class MainView extends AppLayout {
 
 		RouterLink digestPage = new RouterLink("Digest", DigestView.class);
 		digestPage.setHighlightCondition(HighlightConditions.sameLocation());
-		addToDrawer(new VerticalLayout(digestPage,
+		VerticalLayout container = new VerticalLayout(digestPage,
 				new RouterLink("Keys", KeysView.class),
-				new RouterLink("Signature", CryptoSignatureView.class)));
+				new RouterLink("Signature", CryptoSignatureView.class));
+		container.addClassName("menu-container");
+		addToDrawer(container);
 	}
 }

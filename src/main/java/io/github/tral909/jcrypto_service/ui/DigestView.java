@@ -22,11 +22,11 @@ public class DigestView extends VerticalLayout {
 
 		TextArea origTxt = new TextArea("Original input");
 		origTxt.setPlaceholder("Text to digest ...");
-		origTxt.setWidth("90%");
+		origTxt.setWidth("70%");
 		origTxt.setRequired(true);
 
 		TextArea digestText = new TextArea("Digested output");
-		digestText.setWidth("90%");
+		digestText.setWidth("70%");
 
 		Button digestBtn = new Button("digest", e -> {
 			if (StringUtils.isNoneBlank(origTxt.getValue())) {
