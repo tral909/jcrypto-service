@@ -37,7 +37,9 @@ public class CryptoSignatureView extends VerticalLayout {
 			// ссылка для скачивания подписи
 			final StreamResource resource = new StreamResource(event.getFileName() + ".sig",
 					() -> new ByteArrayInputStream(signed));
-			outputSign.add(new Anchor(resource, "Download signature!"));
+			Anchor href = new Anchor(resource, "Download signature!");
+			href.addClassName("signature-output");
+			outputSign.add(href);
 		});
 
 		uploadSign.addFileRejectedListener(event -> {
@@ -82,7 +84,7 @@ public class CryptoSignatureView extends VerticalLayout {
 					uploadVerifySign.getElement().setPropertyJson("files", Json.createArray());
 
 					Span error = new Span("Signature file or data file is not recognized!");
-					error.getStyle().set("color", "red");
+					error.addClassNames("signature-output", "signature-fail");
 					outputVerifySign.add(error);
 					return;
 				}
@@ -90,7 +92,7 @@ public class CryptoSignatureView extends VerticalLayout {
 				result = signatureService.verifySign(data, sign);
 
 				Span resultText = new Span("Signature status: " + (result ? "verified" : "failed"));
-				resultText.getStyle().set("color", (result ? "green" : "red"));
+				resultText.addClassNames("signature-output", result ? "signature-success" : "signature-fail");
 				outputVerifySign.add(resultText);
 				// убрать сами файлы из буфера
 				bufferVerifySign.clearFiles();
@@ -114,13 +116,17 @@ public class CryptoSignatureView extends VerticalLayout {
 		signTitle.addClassName("sign-title");
 		signTitle.add("Sign file");
 		VerticalLayout signLayout = new VerticalLayout(signTitle, uploadSign, outputSign);
+		signLayout.addClassName("sign-block");
 
 		Div verifyTitle = new Div();
 		verifyTitle.addClassName("verify-title");
 		verifyTitle.add("Verify signature");
 		VerticalLayout verifySignLayout = new VerticalLayout(verifyTitle, uploadVerifySign, outputVerifySign);
+		verifySignLayout.addClassName("verify-block");
 
-		//addClassName("sign-block");
-		add(new HorizontalLayout(signLayout, verifySignLayout));
+		addClassName("signature-block");
+		HorizontalLayout horizontalLayout = new HorizontalLayout(signLayout, verifySignLayout);
+		horizontalLayout.addClassName("signature-block-inner");
+		add(horizontalLayout);
 	}
 }
