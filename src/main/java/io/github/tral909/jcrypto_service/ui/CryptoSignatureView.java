@@ -11,7 +11,7 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import elemental.json.Json;
-import io.github.tral909.jcrypto_service.backend.logic.SignatureService;
+import io.github.tral909.jcrypto_service.backend.service.SignatureService;
 import io.github.tral909.jcrypto_service.component.ClearableMultiFileMemoryBuffer;
 
 import java.io.ByteArrayInputStream;

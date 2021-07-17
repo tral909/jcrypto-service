@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Копия MultiFileMemoryBuffer с возможностью очистки загруженных<br>
+ * в буфер файлов {@link ClearableMultiFileMemoryBuffer#clearFiles}
+ */
 public class ClearableMultiFileMemoryBuffer implements MultiFileReceiver {
 
 	private Map<String, FileData> files = new HashMap<>();

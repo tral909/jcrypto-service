@@ -2,6 +2,8 @@ plugins {
 	id 'org.springframework.boot' version '2.4.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'com.vaadin' version '0.14.3.7'
+	//todo remove liquibase gradle and hiber plugins
+	id 'org.liquibase.gradle' version '2.0.4'
 	id 'java'
 }
 
@@ -25,10 +27,15 @@ ext {
 
 dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	//implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.vaadin:vaadin-spring-boot-starter'
-	//implementation 'org.liquibase:liquibase-core'
+	implementation 'org.postgresql:postgresql:42.2.23'
+	liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
+	liquibaseRuntime 'org.liquibase:liquibase-core'
+	liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:3.6'
+	liquibaseRuntime 'ch.qos.logback:logback-core:1.2.3'
+	liquibaseRuntime 'ch.qos.logback:logback-classic:1.2.3'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -42,4 +49,48 @@ dependencyManagement {
 
 test {
 	useJUnitPlatform()
+}
+
+apply from: 'db.gradle'
+
+liquibase {
+	activities {
+		main {
+			changeLogFile 'db/changelog-master.xml'
+			url 'jdbc:postgresql://localhost/jcrypto'
+			referenceUrl 'jdbc:postgresql://localhost/jcrypto-ref'
+			//referenceUrl 'hibernate:spring:io.github.tral909.jcrypto_service.backend.model?dialect=org.hibernate.dialect.PostgreSQLDialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy'
+			username 'postgres'
+			password '12345'
+			//driver 'org.postgresql.Driver'
+			referenceUsername 'postgres'
+			referencePassword '12345'
+			classpath 'src/main:/usr/share/java/postgresql-jdbc4.jar'
+		}
+//		generateChangelog {
+//			changeLogFile 'db/changelog-master.xml'
+//			url 'jdbc:postgresql://localhost/jcrypto'
+//			username 'postgres'
+//			password '12345'
+//			classpath '/usr/share/java/postgresql-jdbc4.jar'
+//		}
+//		diffChangeLog {
+//			changeLogFile 'db/changelog-current.xml'
+//			url 'jdbc:postgresql://localhost/jcrypto'
+//			referenceUrl 'jdbc:postgresql://localhost/jcrypto-ref'
+//			username 'postgres'
+//			password '12345'
+//			referenceUsername 'postgres'
+//			referencePassword '12345'
+//			classpath '/usr/share/java/postgresql-jdbc4.jar'
+//		}
+//		update {
+//			changeLogFile 'db/changelog-master.xml'
+//			url 'jdbc:postgresql://localhost/jcrypto'
+//			referenceUrl 'jdbc:postgresql://localhost/jcrypto-ref'
+//			username 'postgres'
+//			password '12345'
+//			classpath '/usr/share/java/postgresql-jdbc4.jar'
+//		}
+	}
 }

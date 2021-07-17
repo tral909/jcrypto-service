@@ -1,0 +1,108 @@
+// ----- Liquibase -----
+
+ext {
+	// настройки для liquibase
+	driver = 'org.postgresql.Driver'
+	url = 'jdbc:postgresql://localhost/jcrypto'
+	username = 'postgres'
+	password = '12345'
+	referenceUrl = 'jdbc:postgresql://localhost/jcrypto-ref'
+	liqclasspath = "/usr/share/java/postgresql-jdbc4.jar"
+	changelogCurrent = "changelog-current.xml"
+	changelogMaster = "changelog-master.xml"
+}
+
+
+def createHibernateDb(url, username, password) {
+	project.javaexec {
+		main = 'io.github.tral909.jcrypto_service.DbCreator'
+		classpath = sourceSets.main.runtimeClasspath
+		args = [
+				'--url=' + url,
+				'--username=' + username,
+				'--password=' + password,
+				'--classpath=' + liqclasspath
+		].toList()
+	}
+}
+
+def dropDb(url, username, password) {
+	exec {
+		executable 'liquibase'
+		args '--driver=' + driver,
+				'--url=' + url,
+				'--username=' + username,
+				'--password=' + password,
+				'--classpath=' + liqclasspath,
+				'dropAll'
+	}
+}
+
+def liquibaseUpdateDb(url, username, password) {
+	exec {
+		workingDir 'db'
+		executable = 'liquibase'
+		args '--url=' + url,
+				'--username=' + username,
+				'--password=' + password,
+				'--classpath=' + liqclasspath,
+				'--changeLogFile=' + changelogMaster,
+				'update'
+	}
+}
+
+def liquibaseDiffDb(url1, url2, changelogPath, username, password) {
+	exec {
+		workingDir 'db'
+		executable = 'liquibase'
+		args '--changeLogFile=' + changelogPath,
+				'--url=' + url1,
+				'--referenceUrl=' + url2,
+				'--username=' + username,
+				'--password=' + password,
+				'--referenceUsername=' + username,
+				'--referencePassword=' + password,
+				'--classpath=' + liqclasspath,
+				'diffChangeLog'
+	}
+}
+
+task liquibaseUpdate() {
+	doLast {
+		liquibaseUpdateDb(url, username, password)
+	}
+}
+
+task createRefDb(dependsOn: compileJava) {
+	doLast {
+		dropDb(referenceUrl, username, password)
+		createHibernateDb(referenceUrl, username, password)
+	}
+}
+
+task deleteChangelogFile(type: Delete) {
+	delete 'db/' + changelogCurrent
+}
+
+// удалит changelogCurrent,
+// зачистит референсную БД, заполнит референсную БД таблицами на основании имеющихся Entity
+// сравнив основную БД с референсной и создаст новый changelogCurrent файл
+task liquibaseDiff(dependsOn: [deleteChangelogFile, createRefDb]) {
+	doLast {
+		liquibaseDiffDb(url, referenceUrl, changelogCurrent, username, password)
+	}
+}
+
+task liquibaseDiffFormat(dependsOn: [deleteChangelogFile, createRefDb]) {
+	doLast {
+		liquibaseDiffDb(url, referenceUrl, changelogCurrent, username, password)
+		def changeLog = new File("${project.rootDir.absolutePath}/db/${changelogCurrent}")
+		changeLog.write changeLog.text
+				.replaceAll("</changeSet>\\s+<changeSet .+>", "")
+				.replaceAll("<createSequence .+/>", "")
+				.replaceAll("\n\\s*\n", "\n\n")
+	}
+}
+
+// с плагинами gradle-liquibase и hibernate-liquibase не получилось генерить нормальный дифф.
+// используем эти самописные градл таски

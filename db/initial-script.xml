@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="regorov (generated)" id="1626528465213-1">
+        <createTable tableName="private_key">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="private_key_pkey"/>
+            </column>
+            <column name="key" type="VARCHAR(2048)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="public_key_id" type="BIGINT"/>
+        </createTable>
+
+        <createTable tableName="public_key">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="public_key_pkey"/>
+            </column>
+            <column name="key" type="VARCHAR(2048)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="public_key_id" baseTableName="private_key" constraintName="fkcgsfl1p4hsi17oil6jnnfx5di" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="public_key"/>
+    </changeSet>
+</databaseChangeLog>

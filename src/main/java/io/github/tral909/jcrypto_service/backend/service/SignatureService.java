@@ -1,4 +1,4 @@
-package io.github.tral909.jcrypto_service.backend.logic;
+package io.github.tral909.jcrypto_service.backend.service;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
@@ -24,12 +24,6 @@ public class SignatureService {
 	public byte[] sign(InputStream dataStream) {
 		Assert.notNull(dataStream, "dataStream is null");
 
-		// init key pair
-//		SecureRandom secureRandom2 = new SecureRandom();
-//		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
-//		keyPairGen.initialize(1024);
-//		KeyPair keyPair = keyPairGen.generateKeyPair();
-
 		byte[] data = IOUtils.toByteArray(dataStream);
 		byte[] prKeyBytes = Base64.getDecoder().decode(PRIVATE_KEY);
 
@@ -47,12 +41,6 @@ public class SignatureService {
 	public boolean verifySign(InputStream dataStream, InputStream signStream) {
 		Assert.notNull(dataStream, "dataStream is null");
 		Assert.notNull(signStream, "signStream is null");
-
-		// init key pair
-//		SecureRandom secureRandom2 = new SecureRandom();
-//		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
-//		keyPairGen.initialize(1024);
-//		KeyPair keyPair = keyPairGen.generateKeyPair();
 
 		byte[] data = IOUtils.toByteArray(dataStream);
 		byte[] sign = IOUtils.toByteArray(signStream);

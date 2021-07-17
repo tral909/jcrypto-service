@@ -7,7 +7,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.Route;
-import io.github.tral909.jcrypto_service.backend.logic.DigestService;
+import io.github.tral909.jcrypto_service.backend.service.DigestService;
 import io.github.tral909.jcrypto_service.backend.model.DigestAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +28,7 @@ public class DigestView extends VerticalLayout {
 		TextArea digestText = new TextArea("Digested output");
 		digestText.setWidth("70%");
 
-		Button digestBtn = new Button("digest", e -> {
+		Button digestBtn = new Button("Digest", e -> {
 			if (StringUtils.isNoneBlank(origTxt.getValue())) {
 				digestText.setValue(digestService.digest(origTxt.getValue(), algorithms.getValue().getName()));
 			} else {
