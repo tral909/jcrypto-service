@@ -1,7 +1,10 @@
 package io.github.tral909.jcrypto_service.backend.service;
 
+import io.github.tral909.jcrypto_service.backend.dao.PrivateKeyRepository;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -20,12 +23,26 @@ public class SignatureService {
 	private final static String PRIVATE_KEY = "MIIBSwIBADCCASwGByqGSM44BAEwggEfAoGBAP1/U4EddRIpUt9KnC7s5Of2EbdSPO9EAMMeP4C2USZpRV1AIlH7WT2NWPq/xfW6MPbLm1Vs14E7gB00b/JmYLdrmVClpJ+f6AR7ECLCT7up1/63xhv4O1fnxqimFQ8E+4P208UewwI1VBNaFpEy9nXzrith1yrv8iIDGZ3RSAHHAhUAl2BQjxUjC8yykrmCouuEC/BYHPUCgYEA9+GghdabPd7LvKtcNrhXuXmUr7v6OuqC+VdMCz0HgmdRWVeOutRZT+ZxBxCBgLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx+2J6ASQ7zKTxvqhRkImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSoEFgIUH63HIQkL1yQw9FVN+/WjK6BoVyk=";
 	private final static String PUBLIC_KEY = "MIIBtzCCASwGByqGSM44BAEwggEfAoGBAP1/U4EddRIpUt9KnC7s5Of2EbdSPO9EAMMeP4C2USZpRV1AIlH7WT2NWPq/xfW6MPbLm1Vs14E7gB00b/JmYLdrmVClpJ+f6AR7ECLCT7up1/63xhv4O1fnxqimFQ8E+4P208UewwI1VBNaFpEy9nXzrith1yrv8iIDGZ3RSAHHAhUAl2BQjxUjC8yykrmCouuEC/BYHPUCgYEA9+GghdabPd7LvKtcNrhXuXmUr7v6OuqC+VdMCz0HgmdRWVeOutRZT+ZxBxCBgLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx+2J6ASQ7zKTxvqhRkImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSoDgYQAAoGAOJS1cyf/XnlshzQhM86ccX34DAa4DbHzIuRbfBbaIHTlToKCJrsE0LiMsSzHLbpBu0DGashOAexLB0B25nMPQG6JHMmPs9g325Y8bQN/IMUTy+lRP5o1NWX1+LOqreRN1nXNUZVKZ9ELM+ZuD8+7aP/UwX2izU5kPv0e+Ll0kN4=";
 
+	@Autowired
+	private PrivateKeyRepository privateKeyRepository;
+
 	@SneakyThrows
-	public byte[] sign(InputStream dataStream) {
+	public byte[] sign(InputStream dataStream, @Nullable Long privateKeyId) {
 		Assert.notNull(dataStream, "dataStream is null");
 
 		byte[] data = IOUtils.toByteArray(dataStream);
-		byte[] prKeyBytes = Base64.getDecoder().decode(PRIVATE_KEY);
+		byte[] prKeyBytes;
+
+		if (privateKeyId == null) {
+			prKeyBytes = Base64.getDecoder().decode(PRIVATE_KEY);
+
+		} else {
+			String privKey = privateKeyRepository.findById(privateKeyId).orElseThrow(
+					() -> new RuntimeException("Private key with id " + privateKeyId + " not found!"))
+					.getKey();
+
+			prKeyBytes = Base64.getDecoder().decode(privKey);
+		}
 
 		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(prKeyBytes);
 		KeyFactory keyFactory = KeyFactory.getInstance("DSA");

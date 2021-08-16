@@ -1,5 +1,6 @@
 package io.github.tral909.jcrypto_service.ui;
 
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -11,6 +12,8 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import elemental.json.Json;
+import io.github.tral909.jcrypto_service.backend.dto.PrivateKeyOutDto;
+import io.github.tral909.jcrypto_service.backend.service.KeysService;
 import io.github.tral909.jcrypto_service.backend.service.SignatureService;
 import io.github.tral909.jcrypto_service.component.ClearableMultiFileMemoryBuffer;
 
@@ -21,9 +24,16 @@ import java.util.Set;
 @Route(value = "signature", layout = MainView.class)
 public class CryptoSignatureView extends VerticalLayout {
 
-	public CryptoSignatureView(SignatureService signatureService) {
+	public CryptoSignatureView(SignatureService signatureService,
+							   KeysService keysService) {
+
 		MemoryBuffer bufferSign = new MemoryBuffer();
 		Upload uploadSign = new Upload(bufferSign);
+
+		ComboBox<PrivateKeyOutDto> keysComboBox = new ComboBox<>("Keys");
+		keysComboBox.setItems(keysService.getPrivateKeys());
+		keysComboBox.setItemLabelGenerator(k -> "ID: " + k.getId() + ". " + k.getName());
+
 		Div outputSign = new Div();
 
 		// Подпись файла
@@ -32,7 +42,8 @@ public class CryptoSignatureView extends VerticalLayout {
 			//upload.getElement().setPropertyJson("files", Json.createArray());
 			outputSign.removeAll();
 
-			byte[] signed = signatureService.sign(bufferSign.getInputStream());
+			byte[] signed = signatureService.sign(bufferSign.getInputStream(),
+					keysComboBox.getOptionalValue().map(PrivateKeyOutDto::getId).orElse(null));
 
 			// ссылка для скачивания подписи
 			final StreamResource resource = new StreamResource(event.getFileName() + ".sig",
@@ -115,7 +126,7 @@ public class CryptoSignatureView extends VerticalLayout {
 		Div signTitle = new Div();
 		signTitle.addClassName("sign-title");
 		signTitle.add("Sign file");
-		VerticalLayout signLayout = new VerticalLayout(signTitle, uploadSign, outputSign);
+		VerticalLayout signLayout = new VerticalLayout(signTitle, uploadSign, keysComboBox, outputSign);
 		signLayout.addClassName("sign-block");
 
 		Div verifyTitle = new Div();
